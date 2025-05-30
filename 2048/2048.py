@@ -11,8 +11,11 @@ def initialBoard():
 
 
 def spawnRanPiece(board):
-    # NEED TO ACCOUNT FOR IF THE BOARD IS FULL
-    
+    # can't spawn a random piece if it is full
+    count = boardCount(board)
+    if count == 16:
+        return board
+
     while True:
         randTileVal = random.randint(0,9)
         if randTileVal == 9:
@@ -45,9 +48,80 @@ def getUserInput():
             print("Invalid input received, please enter in w, a, s, or d")
 
 def movePiece(board, move):
+    if move == 'w':
+        return handleUp(board)
+    elif move == 'a':
+        return handleLeft(board)
+    elif move == 's':
+        return handleDown(board)
+    elif move == 'd':
+        return handleRight(board)
+    else: 
+        print("Invalid move given")
+
+#Move all pieces up, then check if its surrounding pieces have any matches, 
+# if it does, then connect them, after recheck again if there is any gaps 
+
+# Order I search in will matter, should look at the tiles closer to the wall first
+
+def handleUp(board):
+    # for i in range(len(board)):
+    #     for j in range(len(board[0])):
+    #         piece = board[i][j]
+    #         #If we find a tile piece, we now need to move it up 
+    #         if not piece == '-':
+    #             board[i][j] = '-'
+    #             rowTemp = i
+    #             #Find the next tile piece that isn't empty
+    #             while rowTemp - 1 >= 0 and board[rowTemp-1][j] == '-':
+    #                 rowTemp-=1
+    #             board[rowTemp][j] = piece
+
+    movePiecesUp(board)
+    
+    # After moving the pieces up, need to check the surrounding pieces and its neight so that it can make connections
+
+    for i in range (len(board)):
+        for j in range (len(board[0])):
+            piece = board[i][j]
+            if i - 1 >= 0 and not piece == '-' and board[i-1][j] == piece:
+                board[i][j] = '-'
+                intPiece = int(piece) * 2
+                board[i-1][j] = intPiece
+    
+    movePiecesUp(board)
+
+def movePiecesUp(board):
+    for i in range(len(board)):
+        for j in range(len(board[0])):
+            piece = board[i][j]
+            #If we find a tile piece, we now need to move it up 
+            if not piece == '-':
+                board[i][j] = '-'
+                rowTemp = i
+                #Find the next tile piece that isn't empty
+                while rowTemp - 1 >= 0 and board[rowTemp-1][j] == '-':
+                    rowTemp-=1
+                board[rowTemp][j] = piece
+    
+
+
+def handleDown(board):
     pass
 
+def handleLeft(board):
+    pass
 
+def handleRight(board):
+    pass
+
+def boardCount(board):
+    tileCount = 0
+    for i in range (len(board)):
+        for j in range (len(board[0])):
+            if not board[i][j] == '-':
+                tileCount+=1
+    return tileCount
 
 def checkGameOver(board):
     tileCount = 0
@@ -122,7 +196,7 @@ if __name__ == '__main__':
         # Check if game is over. Game is over if the whole board is filled, and there is no more possible moves, 
         # or if there is a tile with a value of 2048
 
-        gameState = checkGameOver()
+        gameState = checkGameOver(gameBoard)
         if gameState == 1:
             print("You won! You have a tile with value 2048!")
         elif gameState == -1:
