@@ -107,6 +107,18 @@ def movePiecesUp(board):
 
 
 def handleDown(board):
+    i = len(board)
+    while i > -1:
+        for j in range (len(board[0])):
+            piece = board[i][j]
+            if not piece == '-':
+                board[i][j] = '-'
+                rowTemp = i
+                while rowTemp + 1 < len(board) and board[rowTemp + 1][j] == '-':
+                    rowTemp+=1
+                board[rowTemp][j] = piece    
+        i-=1
+
     pass
 
 def handleLeft(board):
