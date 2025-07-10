@@ -31,6 +31,8 @@ def spawnRanPiece(board):
             return board
 
 def printBoard(board):
+    #THIS NEEDS TO BE UPDATED, IF WE HAVE A NUMBER THAT IS TWO CHARACTERS LONG, 
+    # THEN ALL THE OTHER TILES NEED TO BE TWO CHARACTERS LONG TOO
     for i in range (len(board)):
         for j in range (len(board[0])):
             print(board[i][j], end="")
@@ -65,31 +67,22 @@ def movePiece(board, move):
 # Order I search in will matter, should look at the tiles closer to the wall first
 
 def handleUp(board):
-    # for i in range(len(board)):
-    #     for j in range(len(board[0])):
-    #         piece = board[i][j]
-    #         #If we find a tile piece, we now need to move it up 
-    #         if not piece == '-':
-    #             board[i][j] = '-'
-    #             rowTemp = i
-    #             #Find the next tile piece that isn't empty
-    #             while rowTemp - 1 >= 0 and board[rowTemp-1][j] == '-':
-    #                 rowTemp-=1
-    #             board[rowTemp][j] = piece
-
     movePiecesUp(board)
     
-    # After moving the pieces up, need to check the surrounding pieces and its neight so that it can make connections
+    # After moving the pieces up, need to check the surrounding pieces to see if any pieces next to each other match
 
+    # tileCombined = [] # Don't think I need this, after combining the pieces, there shoudn't be any more pieces that can be combined
     for i in range (len(board)):
         for j in range (len(board[0])):
             piece = board[i][j]
-            if i - 1 >= 0 and not piece == '-' and board[i-1][j] == piece:
+            if i - 1 >= 0 and (not piece == '-') and board[i-1][j] == piece:
                 board[i][j] = '-'
                 intPiece = int(piece) * 2
                 board[i-1][j] = intPiece
+                # tileCombined.append((i-1,j))
     
     movePiecesUp(board)
+    return board
 
 def movePiecesUp(board):
     for i in range(len(board)):
@@ -107,10 +100,28 @@ def movePiecesUp(board):
 
 
 def handleDown(board):
-    i = len(board)
+    movePiecesDown(board)
+
+    i = len(board) -1
+    while i > -1:
+        for j in range(len(board[0])):
+            piece = board[i][j]
+            if i + 1 < len(board) and (not piece == '-') and board[i+1][j] == piece:
+                board[i][j] = '-'
+                intPiece = int(piece) * 2
+                board[i+1][j] = intPiece
+        i-=1
+    movePiecesDown(board)
+    return board
+
+
+def movePiecesDown(board):
+    i = len(board) -1
+    #Start at the bottom then make your way up^
     while i > -1:
         for j in range (len(board[0])):
             piece = board[i][j]
+            
             if not piece == '-':
                 board[i][j] = '-'
                 rowTemp = i
@@ -118,14 +129,60 @@ def handleDown(board):
                     rowTemp+=1
                 board[rowTemp][j] = piece    
         i-=1
+    
 
-    pass
 
 def handleLeft(board):
-    pass
+    movePiecesLeft(board)
+    for i in range(len(board)):
+        for j in range(len(board[0])):
+            piece = board[i][j]
+            if j - 1 > -1 and (not piece == '-') and board[i][j-1] == piece:
+                board[i][j] = '-'
+                intPiece = int(piece) * 2
+                board[i][j-1] = intPiece
+
+    movePiecesLeft(board)
+    return board
+
+def movePiecesLeft(board):
+    for i in range (len(board)):
+        for j in range (len(board[0])):
+            piece = board[i][j]
+            if not piece == '-':
+                board[i][j] = '-'
+                colTemp = j
+                while colTemp - 1 > -1 and board[i][colTemp-1] == '-':
+                    colTemp-=1
+                board[i][colTemp] = piece
+    
 
 def handleRight(board):
-    pass
+    movePiecesRight(board)
+    for i in range(len(board)):
+        j = len(board[0]) -1
+        while j > -1:
+            piece = board[i][j]
+            if j + 1 < len(board[0]) and (not piece == '-') and board[i][j+1] == piece:
+                board[i][j] = '-'
+                intPiece = int(piece) *2
+                board[i][j+1] = intPiece
+
+    movePiecesRight(board)
+    return board
+
+def movePiecesRight(board):
+    for i in range(len(board)):
+        j = len(board[0]) -1
+        while j > - 1:
+            piece = board[i][j]
+            if not piece == '-':
+                colTemp = j
+                while colTemp + 1 < len(board[0]) and board[i][colTemp+1] == '-':
+                    colTemp+=1
+                board[i][colTemp] = piece    
+                board[i][j] = '-'
+
 
 def boardCount(board):
     tileCount = 0
@@ -178,6 +235,8 @@ def checkPossibleMoves(board):
             
     return False
 
+def continuePlaying():
+    return False
 
             
 if __name__ == '__main__':
@@ -200,10 +259,11 @@ if __name__ == '__main__':
 
     while playingGame:
         # Get user input
-        input = getUserInput()
+        playerInput = getUserInput()
 
         # Apply user input
-        gameBoard = movePiece(gameBoard, input)
+        gameBoard = movePiece(gameBoard, playerInput)
+        printBoard(gameBoard)
 
         # Check if game is over. Game is over if the whole board is filled, and there is no more possible moves, 
         # or if there is a tile with a value of 2048
@@ -211,11 +271,18 @@ if __name__ == '__main__':
         gameState = checkGameOver(gameBoard)
         if gameState == 1:
             print("You won! You have a tile with value 2048!")
+            #TODO Probably ask the user if they want to continue playing or just quit the game here
+            playingGame = continuePlaying()
+
+
         elif gameState == -1:
             print("You lost! The board is full and there is no more possible moves that can be made!")
+            playingGame = False
 
+        #If the user doesn't make a game winning move, now add a random piece
 
-        
+        gameBoard = spawnRanPiece(gameBoard)
+
 
 
         # Repeat 
