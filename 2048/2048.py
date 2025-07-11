@@ -236,6 +236,19 @@ def checkPossibleMoves(board):
     return False
 
 def continuePlaying():
+    validInput = False
+    print("Would you like to continue playing?")
+    while not validInput:
+        userInput = input("y/n: ")
+        userInput = userInput.lower()
+        if userInput == "y" or userInput == "n":
+            validInput = True
+        else:
+            print("Invalid input given, please re-enter a valid input")
+    if userInput == "y":
+        return True
+    
+    print("Thank you for playing!")
     return False
 
             
@@ -256,7 +269,8 @@ if __name__ == '__main__':
     printBoard(gameBoard)
 
     playingGame = True
-
+    playingPast2048 = False
+    
     while playingGame:
         # Get user input
         playerInput = getUserInput()
@@ -271,10 +285,10 @@ if __name__ == '__main__':
         gameState = checkGameOver(gameBoard)
         if gameState == 1:
             print("You won! You have a tile with value 2048!")
-            #TODO Probably ask the user if they want to continue playing or just quit the game here
+            #If the user wants to continue playing, we need to stop checking for if there is a piece with 2048 value
+
             playingGame = continuePlaying()
-
-
+            
         elif gameState == -1:
             print("You lost! The board is full and there is no more possible moves that can be made!")
             playingGame = False
