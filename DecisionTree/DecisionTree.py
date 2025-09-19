@@ -35,6 +35,7 @@ class DecisionTree:
         # shouldn't keep going if we reached our max depth
         # If number of labels is just 1, no way to split
         # If number of samples < minimum sample split
+        # TODO IN ACTUAL IMPLEMENTATION TEST IF IT PASSES CHISQUARE TEST
         if (depth >= self.maxDepth or nLabels == 1 or nSamples < self.minSampleSplit):
             leafValue = self.mostCommonLabel(y)
             return Node(value= leafValue)
@@ -47,8 +48,12 @@ class DecisionTree:
 
 
         #create the child nodes
+        leftIdx, rightIdx = self.split(X[:, bestFeature], bestThreshold) #split the data based on the best features
+        #leftIdx = left child node
+        #rightIdx = right child node
+        #y = parent node, contains all the current nodes
 
-        leftIdx, rightIdx = self.split(X[:, bestFeature], bestThreshold) #get column with best feature
+
         # make X only contain values in leftIndex, while also keeping columns/features
         # y contains correct outputs
         left = self.growTree(X[leftIdx, :] , y[leftIdx], depth + 1)
