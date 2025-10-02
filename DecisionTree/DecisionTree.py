@@ -102,7 +102,8 @@ class DecisionTree:
         leftIdxs = np.argwhere(X_column <= splitThreshold).flatten()
         rightIdxs = np.argwhere (X_column > splitThreshold).flatten()
         return leftIdxs, rightIdxs
-
+    
+    #input is a list of class labels, ie yes or nos
     def entropy(self, y):
         hist = np.bincount(y) #get an array that tells us the number of occurrences for each element
         probs = hist / len(y) #divide each number of occurrences by the total number of values
